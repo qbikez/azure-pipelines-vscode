@@ -76,6 +76,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable to opt-in for Configure Pipeline feature."
+                },
+                "[azure-pipelines].schemaPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Path to custom YAML schema."
                 }
             }
         },
