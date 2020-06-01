@@ -20,35 +20,33 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     schemaFilePath: string;
 
     constructor(extensionPath: string) {
-        let schemaPath = path.join(extensionPath, './service-schema.json');
-
-        let customPath: string = vscode.workspace
-            .getConfiguration()
-            .get('[azure-pipelines].schemaPath') as string;
-
-        if (customPath) {
-            if (!path.isAbsolute(customPath)) {
-                const files = vscode.workspace.workspaceFolders.map((ws) =>
-                    path.join(ws.uri.fsPath, customPath)
-                );
-                const foundSchema = files.find((f) => fs.existsSync(f));
-                if (foundSchema) customPath = foundSchema;
-            }
-
-            if (fs.existsSync(customPath)) {
-                log(`using cusom schema from '${customPath}'`);
-                schemaPath = customPath;
-            } else {
-                log(`schema file '${customPath}' not found`, "error");
-            }
-        }
-
-        this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
+        this.extensionPath = extensionPath;
+        this.locateSchemaFile();
     }
     
     public locateSchemaFile() {
-        const alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]', null).get<string>('customSchemaFile');
-        const schemaPath = alternateSchema || path.join(this.extensionPath, './service-schema.json');
+        let schemaPath = path.join(this.extensionPath, './service-schema.json');
+        const alternateSchema: string = vscode.workspace.getConfiguration('[azure-pipelines]', null).get<string>('customSchemaFile');
+
+        if (alternateSchema) {
+            let files: string[];
+            if (!path.isAbsolute(alternateSchema)) {
+                files = vscode.workspace.workspaceFolders.map((ws) =>
+                    path.join(ws.uri.fsPath, alternateSchema)
+                );
+            } else {
+                files = [alternateSchema];
+            }
+            
+            const foundSchema = files.find((f) => fs.existsSync(f));
+            if (foundSchema) { 
+                log(`using cusom schema from '${foundSchema}'`);
+                schemaPath = foundSchema; 
+            } else {
+                log(`schema file '${alternateSchema}' not found in any of paths: ${files}`, "error");
+            }
+        }
+
         this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
     }
 
