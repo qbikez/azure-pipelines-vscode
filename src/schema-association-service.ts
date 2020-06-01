@@ -11,12 +11,12 @@ import { log } from './logger';
 
 export interface ISchemaAssociationService {
     getSchemaAssociation(): ISchemaAssociations;
+    locateSchemaFile(): void;
 }
 
-// TODO: I think we can remove this class. Make it simpler?
 export class SchemaAssociationService implements ISchemaAssociationService {
 
-    /* Where the schema file is on disk. This is packaged with the extension, in the root, at service-schema.json. */
+    extensionPath: string;
     schemaFilePath: string;
 
     constructor(extensionPath: string) {
@@ -43,6 +43,12 @@ export class SchemaAssociationService implements ISchemaAssociationService {
             }
         }
 
+        this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
+    }
+    
+    public locateSchemaFile() {
+        const alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]', null).get<string>('customSchemaFile');
+        const schemaPath = alternateSchema || path.join(this.extensionPath, './service-schema.json');
         this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
     }
 

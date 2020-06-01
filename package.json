@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.165.1",
+    "version": "1.170.0",
     "publisher": "ms-azure-devops",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "repository": {
@@ -18,7 +18,7 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.32.0"
+        "vscode": "^1.45.1"
     },
     "categories": [
         "Programming Languages",
@@ -70,17 +70,20 @@
             }
         ],
         "configuration": {
-            "title": "Azure Pipelines extension configuration.",
+            "title": "Azure Pipelines",
             "properties": {
                 "[azure-pipelines].configure": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Enable to opt-in for Configure Pipeline feature."
+                    "description": "Enable 'Configure Pipeline' feature"
                 },
-                "[azure-pipelines].schemaPath": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Path to custom YAML schema."
+                "[azure-pipelines].customSchemaFile": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "Use a different schema file"
                 }
             }
         },
@@ -128,8 +131,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./ && node copyStaticFiles.js",
         "watch": "node copyStaticFiles.js && tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "test": "node ./out/test/runTest.js",
         "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js"
     },
     "devDependencies": {
@@ -139,14 +141,16 @@
         "@types/node": "7.0.43",
         "@types/q": "1.5.0",
         "@types/underscore": "1.8.9",
+        "@types/vscode": "^1.45.1",
         "ajv": "^6.9.1",
         "assert": "1.4.1",
+        "glob": "^7.1.6",
         "mocha": "5.2.0",
-        "tslint": "5.8.0",
         "ts-node": "7.0.1",
+        "tslint": "5.8.0",
         "typescript": "3.3.1",
-        "vscode": "1.1.33",
-        "vscode-azureextensiondev": "0.2.1"
+        "vscode-azureextensiondev": "^0.4.0",
+        "vscode-test": "^1.3.0"
     },
     "dependencies": {
         "azure-arm-resource": "7.3.0",
@@ -161,7 +165,7 @@
         "uuid": "^3.3.2",
         "vscode-azureextensionui": "0.26.3",
         "vscode-extension-telemetry": "0.0.18",
-        "vscode-languageclient": "5.0.1",
+        "vscode-languageclient": "5.2.1",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.6"
     },
